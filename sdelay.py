@@ -63,12 +63,12 @@ class SoftDelay:
 
         # Create a loop to do just that. We want 256 - the number of outer
         # loops we need to do so that we overflow
-        s0 = 256 - count_num
+        s1 = 256 - count_num
 
         # Generate appropriate assembly
         out = "; Initialise loop registers\n"
-        out += "LOAD S0, {0}\n".format(hex(s0))
-        out += "LOAD S1, {0}\n\n".format(hex(0))
+        out += "LOAD S0, {0}\n".format(hex(0))
+        out += "LOAD S1, {0}\n\n".format(hex(s1))
         out += "; Loop for approx {0} seconds\n".format(self.delay_time)
         out += "loop:\n"
         out += "    ADD S0, 0x01\n"
