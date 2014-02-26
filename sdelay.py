@@ -16,6 +16,7 @@ class SoftDelay:
         # The number of clock cycles it takes to execute an instruction
         self.cycles_per_instr = 2
         self.delay_time = delay_time
+        self.outer_loops = 1
 
     @property
     def dummy_i(self):
@@ -49,22 +50,6 @@ class SoftDelay:
             registers += 1
 
         return registers
-
-    @property
-    def outer_loops(self):
-        """
-        Work out the number of times the outer loop needs to loop to get the
-        rough number of increments we want. Sadly we have no control over the
-        inner loops so can't be too specific.
-        """
-
-        count = (self.dummy_i / (2**(self.register_count-1)))
-        count /= (256**(self.register_count-1))
-        
-        # Round the number up
-        count = int(math.ceil(count))
-
-        return count
 
     @property
     def register_array(self):
@@ -108,6 +93,14 @@ class SoftDelay:
     def actual_time(self):
         return float(self.actual_cycles) / (self.clk_speed * (10**6))
 
+    def set_outer_loops(self):
+        """
+        Work out the number of outer loops we need
+        """
+
+        while self.actual_time < self.delay_time:
+            self.outer_loops += 1
+
     def generate(self):
         """
         We're going to generate assembly that uses nested for loops to create
@@ -128,6 +121,7 @@ class SoftDelay:
         """
 
         # Generate appropriate assembly
+        self.set_outer_loops()
 
         out = """; The following code block is a software delay loop that delays
 ; for approximately {0} seconds on a {1}MHz picoblaze, where each instruction
@@ -159,5 +153,5 @@ if __name__ == "__main__":
     # 2ms
     #sd = SoftDelay(10, 2, 2 * (10**-3))
     # 1s
-    sd = SoftDelay(10, 2, 1)
+    sd = SoftDelay(10, 2, 2)
     print sd.generate()
