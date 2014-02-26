@@ -99,6 +99,14 @@ class SoftDelay:
 
         return i
 
+    @property
+    def actual_cycles(self):
+        return self.actual_i * self.cycles_per_instr
+
+    @property
+    def actual_time(self):
+        return float(self.actual_cycles) / (self.clk_speed * (10**6))
+
     def generate(self):
         """
         We're going to generate assembly that uses nested for loops to create
@@ -123,12 +131,13 @@ class SoftDelay:
         out = """; The following code block is a software delay loop that delays
 ; for approximately {0} seconds on a {1}MHz picoblaze, where each instruction
 ; takes {2} clock cycles. Exactly {3} instructions will be executed, taking
-; {4} clock cycles.
+; {4} clock cycles. The exact time delay should be {5} seconds.
 """.format(self.delay_time,
            self.clk_speed,
            self.cycles_per_instr,
            self.actual_i,
-           self.actual_i * 2)
+           self.actual_cycles,
+           self.actual_time)
 
         # Initialise the registers
         for i in range(0, len(self.register_array)):
