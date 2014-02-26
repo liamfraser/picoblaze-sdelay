@@ -44,6 +44,7 @@ class SoftDelay:
         """
 
         registers = 1
+        
         while ((self.dummy_i / (2**(registers-1))) > (256**registers)):
             registers += 1
 
