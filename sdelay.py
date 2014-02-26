@@ -59,7 +59,9 @@ class SoftDelay:
 
         # Work out the rough number of times we want to count to 256 and round
         # up
-        count_num = int(math.ceil((self.dummy_i / (registers * 2)) / 256))
+        count_num = int(math.ceil((self.dummy_i / (registers)) / 256))
+
+        print count_num
 
         # Create a loop to do just that. We want 256 - the number of outer
         # loops we need to do so that we overflow
@@ -79,5 +81,8 @@ class SoftDelay:
         return out
 
 if __name__ == "__main__":
+    # 2ms
     sd = SoftDelay(10, 2, 2 * (10**-3))
+    # 1s
+    #sd = SoftDelay(10, 2, 1)
     print sd.generate()
