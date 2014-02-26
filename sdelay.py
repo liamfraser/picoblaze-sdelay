@@ -81,6 +81,24 @@ class SoftDelay:
 
         return registers
 
+    @property
+    def actual_i(self):
+        """
+        The actual number of instructions that will be executed by the software
+        delay loop
+        """
+
+        # Register initialisation
+        i = self.register_count
+
+        # The inner loops multiplied by the outer loop
+        i += ((256**(self.register_count-1) * 2) * self.outer_loops)
+
+        # The number of times the outer loop loops
+        i += self.outer_loops * 2
+
+        return i
+
     def generate(self):
         """
         We're going to generate assembly that uses nested for loops to create
@@ -101,20 +119,28 @@ class SoftDelay:
         """
 
         # Generate appropriate assembly
-        out = "; Initialise loop registers\n"
+
+        out = """; The following code block is a software delay loop that delays
+; for approximately {0} seconds on a {1}MHz picoblaze, where each instruction
+; takes {2} clock cycles. Exactly {3} instructions will be executed, taking
+; {4} clock cycles.
+""".format(self.delay_time,
+           self.clk_speed,
+           self.cycles_per_instr,
+           self.actual_i,
+           self.actual_i * 2)
 
         # Initialise the registers
         for i in range(0, len(self.register_array)):
             out += "LOAD S{0:x}, {1:#x}\n".format(i, self.register_array[i])
 
         out += "\n"
-        out += "; Loop for approx {0} seconds\n".format(self.delay_time)
         out += "loop:\n"
 
         # Do the increments
 
         for i in range(0, len(self.register_array)):
-            out += "ADD S{0:x}, 0x01\n".format(i, self.register_array[i])
+            out += "    ADD S{0:x}, 0x01\n".format(i, self.register_array[i])
             out += "    JUMP NZ, loop\n"
 
         return out
@@ -124,8 +150,4 @@ if __name__ == "__main__":
     #sd = SoftDelay(10, 2, 2 * (10**-3))
     # 1s
     sd = SoftDelay(10, 2, 1)
-    print sd.dummy_i
-    print sd.register_count
-    print sd.outer_loops
-    print sd.register_array
     print sd.generate()
