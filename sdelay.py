@@ -57,7 +57,8 @@ class SoftDelay:
         inner loops so can't be too specific.
         """
 
-        count = (self.dummy_i / (2**(self.register_count-1))) / 256
+        count = (self.dummy_i / (2**(self.register_count-1)))
+        count /= (256**(self.register_count-1))
         
         # Round the number up
         count = int(math.ceil(count))
@@ -120,9 +121,11 @@ class SoftDelay:
 
 if __name__ == "__main__":
     # 2ms
-    sd = SoftDelay(10, 2, 2 * (10**-3))
+    #sd = SoftDelay(10, 2, 2 * (10**-3))
+    # 1s
+    sd = SoftDelay(10, 2, 1)
+    print sd.dummy_i
     print sd.register_count
     print sd.outer_loops
-    # 1s
-    #sd = SoftDelay(10, 2, 1)
+    print sd.register_array
     print sd.generate()
