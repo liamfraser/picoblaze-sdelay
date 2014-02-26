@@ -42,6 +42,7 @@ class SoftDelay:
         self.cycles_per_instr = 2
         self.delay_time = delay_time
         self.outer_loops = 1
+        self.set_outer_loops()
 
     @property
     def dummy_i(self):
@@ -146,7 +147,6 @@ class SoftDelay:
         """
 
         # Generate appropriate assembly
-        self.set_outer_loops()
 
         out = """; The following code block is a software delay loop that delays
 ; for approximately {0} seconds on a {1}MHz picoblaze, where each instruction
