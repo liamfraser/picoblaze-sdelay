@@ -147,7 +147,6 @@ class SoftDelay:
         """
 
         # Generate appropriate assembly
-
         out = """; The following code block is a software delay loop that delays
 ; for approximately {0} seconds on a {1}MHz picoblaze, where each instruction
 ; takes {2} clock cycles. Exactly {3} instructions will be executed, taking
@@ -167,7 +166,6 @@ class SoftDelay:
         out += "loop:\n"
 
         # Do the increments
-
         for i in range(0, len(self.register_array)):
             out += "    ADD S{0:x}, 0x01\n".format(i, self.register_array[i])
             out += "    JUMP NZ, loop\n"
